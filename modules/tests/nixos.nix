@@ -12,7 +12,7 @@ testers.runNixOSTest {
   name = "catppuccin-nix";
 
   nodes.machine =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
 
     {
       imports = [
@@ -31,6 +31,8 @@ testers.runNixOSTest {
           enable = true;
           package = pkgs.kdePackages.sddm; # our module/the upstream port requires the qt6 version
         };
+        forgejo.enable = true;
+        gitea.enable = true;
         xserver.enable = true; # required for sddm
       };
 
@@ -52,7 +54,10 @@ testers.runNixOSTest {
       };
 
       home-manager.users.${userName} = {
-        imports = [ ./home.nix ];
+        imports = [
+          ./home.nix
+          { home = { inherit (config.system) stateVersion; }; }
+        ];
       };
     };
 
